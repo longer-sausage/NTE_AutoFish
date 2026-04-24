@@ -3,6 +3,7 @@ import win32api
 import win32gui
 import win32con
 import time
+import random
 
 
 class Controller:
@@ -71,3 +72,9 @@ class Controller:
         win32api.mouse_event(win32con.MOUSEEVENTF_LEFTDOWN, 0, 0, 0, 0)
         time.sleep(0.05)
         win32api.mouse_event(win32con.MOUSEEVENTF_LEFTUP, 0, 0, 0, 0)
+
+    def sleep(self, seconds, variance=0.2):
+        low = seconds * (1 - variance)
+        high = seconds * (1 + variance)
+        t = sum(random.uniform(low, high) for _ in range(3)) / 3
+        time.sleep(t)

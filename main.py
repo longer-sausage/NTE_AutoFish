@@ -28,6 +28,7 @@ def wait_until_appear(template):
     for frame in controller.loop():
         if template.match(frame):
             break
+    controller.sleep(0.1)
 
 while True:
     wait_until_appear(HOOK)
@@ -35,5 +36,5 @@ while True:
     wait_until_appear(TAKE_BAIT)
     keyboard.click('f')
     fish_bar.start()
-    time.sleep(2)
+    controller.sleep(2)
     controller.mouse_click()
