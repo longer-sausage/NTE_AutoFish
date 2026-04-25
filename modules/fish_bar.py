@@ -4,6 +4,7 @@ import time
 
 from modules.controller import Controller
 from modules.keyboard import Keyboard
+from modules.logger import logger
 
 class FishBar:
     RECT = (413, 77, 475, 7)   # (x, y, w, h)
@@ -28,7 +29,7 @@ class FishBar:
         if cols.size > 0:
             left, right = cols[0] + x, cols[-1] + x
             width = right - left
-            return (int(left + width / 3), int(left + width / 1.5))
+            return (int(left + width * 0.4), int(left + width * 0.6))
         return None
 
     def _get_yellow_cursor(self, screenshot):
@@ -51,29 +52,35 @@ class FishBar:
         
         self._release_all()
         if key:
+            logger.debug(f"Pressing '{key}'")
             self.keyboard.press(key)
             self.current_key = key
 
     def _release_all(self):
         if self.current_key:
+            logger.debug(f"Releasing '{self.current_key}'")
             self.keyboard.release(self.current_key)
             self.current_key = None
 
     def wait_until_ui_appear(self):
+        logger.debug("Waiting for fish bar UI to appear...")
         for frame in self.controller.loop():
             if self._get_green_bar(frame) is not None and self._get_yellow_cursor(frame) is not None:
+                logger.debug("Fish bar UI appeared.")
                 break
 
     def start(self):
+        logger.info("Starting fishing...")
         self.wait_until_ui_appear()
         
         missing_green_bar_count = 0
-        for frame in self.controller.loop(interval=0.05):
+        for frame in self.controller.loop(interval=0):
             green_bar = self._get_green_bar(frame)
             
             if green_bar is None:
                 missing_green_bar_count += 1
                 if missing_green_bar_count > 10: # 连续 10 帧检测不到绿条才认为结束
+                    logger.info("Fishing ended.")
                     break
                 continue
             

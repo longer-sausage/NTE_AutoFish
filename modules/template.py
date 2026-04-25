@@ -1,13 +1,23 @@
 import cv2
+import os
+from modules.logger import logger
 
 class Template:
     def __init__(self, filename: str):
+        self.name = os.path.basename(filename).split('.')[0]
         img = cv2.imread(filename, cv2.IMREAD_UNCHANGED)
+        if img is None:
+            logger.error(f"Failed to load template: {filename}")
+            raise FileNotFoundError(f"Template file not found: {filename}")
         alpha = img[:, :, 3]
         coords = cv2.findNonZero(alpha)
         x, y, w, h = cv2.boundingRect(coords)
         self.rect = (x, y, w, h)
         self.image = img[y:y+h, x:x+w, :3]
+        logger.debug(f"Loaded template '{self.name}' with rect {self.rect}.")
+
+    def __str__(self):
+        return self.name
     
     def match(self, screenshot, offset=10, similarity=0.85):
         if screenshot is None or self.image is None:
@@ -32,3 +42,4 @@ class Template:
 
 TAKE_BAIT = Template("./assets/templates/TAKE_BAIT.png")
 HOOK = Template("./assets/templates/HOOK.png")
+CLICK_BLANK = Template("./assets/templates/CLICK_BLANK.png")

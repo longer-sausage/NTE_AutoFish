@@ -2,6 +2,7 @@ import ctypes
 import time
 import threading
 import os
+from modules.logger import logger
 
 # 硬件扫描码表 (Scan Codes)
 SCAN_CODES = {
@@ -92,7 +93,7 @@ class Keyboard:
             VK_BACKTICK = 0xC0
             while True:
                 if ctypes.windll.user32.GetAsyncKeyState(VK_BACKTICK) & 0x8000:
-                    print("\n[Keyboard] '`' key detected. Terminating...")
+                    logger.info("'`' key detected. Terminating...")
                     os._exit(0)
                 time.sleep(0.1)
 
